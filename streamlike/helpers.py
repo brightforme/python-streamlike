@@ -38,20 +38,20 @@ def raise_errors_on_failure(response):
     if response.status_code == 404:
         raise ResourceNotFound("Not found.")
     elif response.status_code == 400 or response.status_code == 406:
-        raise BadRequest("Incoming request body does not contain a valid JSON object.")
+        raise BadRequest(response.json()['errors'][0]['error']['message'])
     elif response.status_code == 401:
-        raise AuthenticationError("Unnknown API Key. Please check your API key and try again")
+        raise AuthenticationError(response.json()['errors'][0]['error']['message'])
     elif response.status_code == 413:
-        raise RequestTooLarge("File size too large.")
+        raise RequestTooLarge(response.json()['errors'][0]['error']['message'])
     elif response.status_code == 415:
-        raise FileTypeUnsupported("File type not supported.")
+        raise FileTypeUnsupported(response.json()['errors'][0]['error']['message'])
     elif response.status_code == 429:
-        raise TooManyRequests("Overage usage limit hit.")
+        raise TooManyRequests(rresponse.json()['errors'][0]['error']['message'])
     elif response.status_code == 500:
-        raise ServerError("Server has encountered an unexpected error and cannot fulfill your request")
+        raise ServerError(response.json()['errors'][0]['error']['message'])
     elif response.status_code == 502:
-        raise BadGatewayError("Bad gateway.")
+        raise BadGatewayError(rresponse.json()['errors'][0]['error']['message'])
     elif response.status_code == 503:
-        raise ServiceUnavailableError("Service unavailable.")
+        raise ServiceUnavailableError(response.json()['errors'][0]['error']['message'])
 
     return response
