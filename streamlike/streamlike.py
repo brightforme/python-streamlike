@@ -48,29 +48,52 @@ class Streamlike:
             r = requests.put(self.api_url + endpoint, headers=headers,
                             data=json.dumps(payload))
             r = raise_errors_on_failure(r)
-       
-        return r.json()
+        if r.headers['content-type'] == 'application/json':
+            return r.json()
+        else:
+            return r.text
 
     def add_media(self,media_url,permalink,media_type,name,status,
-                    description,credits,keyword,codec='h264',hide_controls=True,callback_url=None,
+                    description,credits,keywords,codec='h264',hide_controls=True,callback_url=None,
                     ):
         payload = {
             'media':{
                 'media_type':media_type,
                 'permalink':permalink,
+                'media_files':{
+                'for_encoding':{
+                    'media_url':media_url,
+                    'codec':codec,
+                    'callback_url':callback_url
+                    }
+                },
                 'name':name,
                 'description':description,
                 'hide_controls':hide_controls,
-                'callback_url':callback_url,
                 'status':status,
-                'codec':codec,
                 'credits':credits,
-                'keyword':keyword,
+                'keywords':keywords,
 
             }
         }
         return self.make_call('media','POST',payload=payload)
+    
+    def update_media(self, media_id, updated_fields=None):
+        payload = {
+            'media':updated_fields
+        }
+        endpoint = 'media/{0}'.format(media_id)
+        return self.make_call(endpoint, 'PUT', payload=payload)
 
-    def search_media(self,params=None):
-        return self.make_call('media','GET',params=params)
+    def delete_media(self,media_id):
+        endpoint = 'media/{0}'.format(media_id)
+        return self.make_call(endpoint, 'DELETE')
+
+    def search_media(self, media_id=None, params=None):
+        if media_id:
+            endpoint = 'media/{0}'.format(media_id)
+        else:
+            endpoint = 'media'
+
+        return self.make_call(endpoint,'GET',params=params)
 
