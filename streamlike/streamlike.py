@@ -1,4 +1,5 @@
 from xml.etree import ElementTree
+from .helpers import raise_errors_on_failure
 import requests
 import json
 
@@ -7,13 +8,13 @@ class Streamlike:
         self.login = login
         self.password = password
         self.api_key = api_key
-        self.token = get_token()
         self.api_url = 'https://api.streamlike.com/'
+        self.token = self.get_token()
 
     def get_token(self):
         headers = {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'X-Streamlike-Authorization': 'streamlikeAuth certificate="{0}"'.format(self.api_key)
+        'X-Streamlike-Authorization': 'streamlikeAuth certificate="{0}"'.format(self.api_key),
                 }
         payload = { 
                     'login':self.login,
@@ -21,30 +22,37 @@ class Streamlike:
                     }
         r = requests.post("https://api.streamlike.com/streamlikeAuthToken", 
                             data=payload, headers=headers)
-        shitty_xml_response = ElementTree.fromstring(r.text)
-        return shitty_xml_response.find('token').text
+        headers['X-Streamlike-Authorization'] = 'streamlikeAuth token="{0}"'.format(ElementTree.fromstring(r.text).find('token').text)
+        headers['Content-Type'] = 'application/xml'
+        r = requests.post("https://api.streamlike.com/streamlikeAuthSessionToken", headers=headers)
+        return ElementTree.fromstring(r.text).find('token').text
 
-    def make_call(endpoint, method, payload=None):
+    def make_call(self,endpoint,method,payload=None,params=None):
         headers = {
+        'Accept':'application/json',
         'Content-Type': 'application/json',
         'X-Streamlike-Authorization': 'streamlikeAuth token="{0}"'.format(self.token)
                 }
         if method == 'GET':
-            r = requests.get(self.api_url + endpoint, headers=headers)
+            r = requests.get(self.api_url + endpoint, headers=headers, params=params)
+            r = raise_errors_on_failure(r)
         if method == 'DELETE':
             r = requests.delete(self.api_url + endpoint, headers=headers, 
                             data=json.dumps(payload))
+            r = raise_errors_on_failure(r)
         if method == 'POST':
             r = requests.post(self.api_url + endpoint, headers=headers,
                             data=json.dumps(payload))
+            r = raise_errors_on_failure(r)
         if method == 'PUT':
             r = requests.put(self.api_url + endpoint, headers=headers,
                             data=json.dumps(payload))
-
+            r = raise_errors_on_failure(r)
+       
         return r.json()
 
-    def add_media(self,media_url,permalink,media_type,name,slug,status,codec='h264',
-                    description,credits,keyword,hide_controls=True,callback_url=None,
+    def add_media(self,media_url,permalink,media_type,name,status,
+                    description,credits,keyword,codec='h264',hide_controls=True,callback_url=None,
                     ):
         payload = {
             'media':{
@@ -61,6 +69,8 @@ class Streamlike:
 
             }
         }
-        return make_call('media','POST',payload=payload)
+        return self.make_call('media','POST',payload=payload)
 
+    def search_media(self,params=None):
+        return self.make_call('media','GET',params=params)
 
