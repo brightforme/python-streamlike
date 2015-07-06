@@ -1,6 +1,6 @@
 """The streamlike module"""
 from xml.etree import ElementTree
-from streamlike.helpers import raise_errors_on_failure
+from .helpers import raise_errors_on_failure
 import requests
 import json
 

@@ -1,1 +1,1 @@
-from streamlike.streamlike import Streamlike
+from .streamlike import Streamlike

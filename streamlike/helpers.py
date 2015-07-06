@@ -1,5 +1,5 @@
 """An internal(!) helpers module"""
-from streamlike.exceptions import *
+from .exceptions import *
 
 def get_error_from_json(json):
     """
