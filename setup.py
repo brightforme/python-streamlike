@@ -10,13 +10,13 @@ with open('README.md') as readme:
 
 setup(
     name = "python-streamlike",
-    version = "0.0.1",
+    version = "0.0.2",
     description = "Streamlike API wrapper",
     long_description = long_description,
     author = "Martin-Zack Mekkaoui",
     author_email = "martin@brightfor.me",
     license = "MIT License",
-    url = "https://github.com/mekza/python-streamlike/",
+    url = "https://github.com/brightforme/python-streamlike/",
     keywords = [ 'Streamlike API wrapper','CDN', 'API' ],
     classifiers = [],
     packages = find_packages(),
