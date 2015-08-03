@@ -109,7 +109,7 @@ class Streamlike:
         return self.make_call('tag','POST',payload=payload)
 
     def search_tag(self, tag_id=None, params=None):
-        if media_id:
+        if tag_id:
             endpoint = 'tag/{0}'.format(tag_id)
         else:
             endpoint = 'tag'
