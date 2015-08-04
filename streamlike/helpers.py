@@ -1,57 +1,42 @@
-class StreamlikeException(Exception):
-    """ Base error. """
-    def __init__(self, message, result=None):
-        super(StreamlikeException, self).__init__(message)
-        self.result = result
+"""An internal(!) helpers module"""
+from .exceptions import *
 
-class BadRequest(StreamlikeException):
-    pass
+def get_error_from_json(json):
+    """
+        Parses the json and returns the error message.
 
-class AuthenticationError(StreamlikeException):
-    pass
+        json -- a json object containg the response by the API
 
-class BadGatewayError(StreamlikeException):
-    pass
-
-class ResourceNotFound(StreamlikeException):
-    pass
-
-class ServerError(StreamlikeException):
-    pass
-
-class ServiceUnavailableError(StreamlikeException):
-    pass
-
-class RequestTooLarge(StreamlikeException):
-    pass
-
-class FileTypeUnsupported(StreamlikeException):
-    pass
-
-class UnprocessableEntity(StreamlikeException):
-    pass
-
-class TooManyRequests(StreamlikeException):
-    pass
+        returns -- the error string contained in the response
+    """
+    return json['errors'][0]['error']['message']
 
 def raise_errors_on_failure(response):
+    """
+        Given an API response, either throws an appropriate
+        exception when the response errored or return the result.
+
+        response -- the response to check
+    """
+    msg = ""
+    if response.status_code != 200:
+        msg = get_error_from_json(response.json())
+
     if response.status_code == 404:
         raise ResourceNotFound("Not found.")
     elif response.status_code == 400 or response.status_code == 406:
-        raise BadRequest(response.json()['errors'][0]['error']['message'])
+        raise BadRequest(msg)
     elif response.status_code == 401:
-        raise AuthenticationError(response.json()['errors'][0]['error']['message'])
+        raise AuthenticationError(msg)
     elif response.status_code == 413:
-        raise RequestTooLarge(response.json()['errors'][0]['error']['message'])
+        raise RequestTooLarge(msg)
     elif response.status_code == 415:
-        raise FileTypeUnsupported(response.json()['errors'][0]['error']['message'])
+        raise FileTypeUnsupported(msg)
     elif response.status_code == 429:
-        raise TooManyRequests(rresponse.json()['errors'][0]['error']['message'])
+        raise TooManyRequests(msg)
     elif response.status_code == 500:
-        raise ServerError(response.json()['errors'][0]['error']['message'])
+        raise ServerError(msg)
     elif response.status_code == 502:
-        raise BadGatewayError(rresponse.json()['errors'][0]['error']['message'])
+        raise BadGatewayError(msg)
     elif response.status_code == 503:
-        raise ServiceUnavailableError(response.json()['errors'][0]['error']['message'])
-
-    return response
+        raise ServiceUnavailableError(msg)
