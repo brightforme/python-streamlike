@@ -87,27 +87,27 @@ class Streamlike:
             return req.json()
         return req.text
 
-    #TODO: Find decent way to strip some of the arguments or let them default
+    #TODO: API coverage 45 args vs 11 args
     def add_media(self, media_url, permalink, media_type, name,
-                  status, description, creds, keywords, codec='h264',
+                  status, description=None, credits=None, keywords=None, codec='h264',
                   hide_controls=True, callback_url=None
                  ):
         """
-            adds a medium to streamlike.
+            adds a media to streamlike.
 
-            media_url     -- the url under which the medium is to be found
-            permalink     -- the medium's permalink
-            metia_type    -- the medium's type
-            name          -- the medium's name
-            status        -- the medium's status
-            description   -- a description for the medium
-            creds         -- the medium's credits (so called because there is
+            media_url     -- the url under which the media is to be found
+            permalink     -- the media's permalink
+            metia_type    -- the media's type
+            name          -- the media's name
+            status        -- the media's status
+            description   -- a description for the media
+            creds         -- the media's credits (so called because there is
                              a lesser-known Python builtin of the same name)
-            keywords      -- keywords for the medium
-            codec         -- the medium's codec (optional, defaults to h264)
+            keywords      -- keywords for the media
+            codec         -- the media's codec (optional, defaults to h264)
             hide_controls -- toggles whether controls are shown (optional,
                              defaults to True)
-            callback_url  -- the medium's callback url (optional)
+            callback_url  -- the media's callback url (optional)
         """
         payload = {
             'media': {
@@ -124,7 +124,7 @@ class Streamlike:
                 'description': description,
                 'hide_controls': hide_controls,
                 'status': status,
-                'credits': creds,
+                'credits': credits,
                 'keywords': keywords,
 
             }
@@ -133,9 +133,9 @@ class Streamlike:
 
     def update_media(self, media_id, updated_fields=None):
         """
-            updates a streamlike medium.
+            updates a streamlike media.
 
-            media_id -- the mediums' id
+            media_id -- the media's id
         """
         payload = {'media': updated_fields}
         endpoint = 'media/{0}'.format(media_id)
@@ -143,19 +143,19 @@ class Streamlike:
 
     def delete_media(self, media_id):
         """
-            deletes a streamlike medium by its' id.
+            deletes a streamlike media by its id.
 
-            media_id -- the mediums' id.
+            media_id -- the media's id.
         """
         endpoint = 'media/{0}'.format(media_id)
         return self.make_call(endpoint, 'DELETE')
 
     def search_media(self, media_id=None, params=None):
         """
-            searches for a medium on streamlike.
+            searches for a media on streamlike.
             If no id is provided, all media are returned.
 
-            media_id -- the medium's id (optional)
+            media_id -- the media's id (optional)
             params   -- params for the call (optional)
         """
         endpoint = 'media'

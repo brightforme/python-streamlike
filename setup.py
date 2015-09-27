@@ -5,12 +5,12 @@ import re
 from setuptools import find_packages
 from setuptools import setup
 
-with open('README.md') as readme:
+with open('README.rst') as readme:
     long_description = readme.read()
 
 setup(
     name = "python-streamlike",
-    version = "0.0.3",
+    version = "0.0.4",
     description = "Streamlike API wrapper",
     long_description = long_description,
     author = "Martin-Zack Mekkaoui",
