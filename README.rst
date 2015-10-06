@@ -41,4 +41,5 @@ Add a Media
                     permalink="video-mp4",
                     name="anon video",
                     status="online",
-                    description="my vacation video")
+                    description="my vacation video",
+                    media_type="video")
