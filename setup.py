@@ -10,7 +10,7 @@ with open('README.rst') as readme:
 
 setup(
     name = "python-streamlike",
-    version = "0.0.5",
+    version = "0.0.6",
     description = "Streamlike API wrapper",
     long_description = long_description,
     author = "Martin-Zack Mekkaoui",

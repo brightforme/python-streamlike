@@ -90,8 +90,7 @@ class Streamlike:
     #TODO: API coverage 45 args vs 11 args
     def add_media(self, media_url, permalink, media_type, name,
                   status, description=None, credits=None, keywords=None, codec='h264',
-                  hide_controls=True, callback_url=None
-                 ):
+                  hide_controls=True, callback_url=None, html5_encoding=False, playlist_id=None):
         """
             adds a media to streamlike.
 
@@ -126,9 +125,19 @@ class Streamlike:
                 'status': status,
                 'credits': credits,
                 'keywords': keywords,
-
             }
         }
+        if html5_encoding:
+            payload['media']['external_encodings'] = {
+                "external_encoding": {
+                    "label":"streamlike_html5",
+                    "value":"true"
+                }
+            }
+
+        if playlist_id:
+            payload['media']['playlist_id'] = playlist_id
+
         return self.make_call('media', 'POST', payload=payload)
 
     def update_media(self, media_id, updated_fields=None):
