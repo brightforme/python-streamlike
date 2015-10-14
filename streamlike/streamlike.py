@@ -205,3 +205,16 @@ class Streamlike:
             endpoint += '/{0}'.format(tag_id)
 
         return self.make_call(endpoint, 'GET', params=params)
+
+    def search_playlist(self, playlist_id=None, params=None):
+        endpoint = 'playlist'
+        if playlist_id:
+            endpoint += '/{0}'.format(playlist_id)
+
+        return self.make_call(endpoint, 'GET', params=params)
+
+    def add_to_playlist(self, media_id, playlist_id):
+        updated_field = {
+            "playlist_id":playlist_id
+        }
+        return self.update_media(media_id, updated_field)
