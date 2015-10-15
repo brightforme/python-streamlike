@@ -136,7 +136,7 @@ class Streamlike:
             }
 
         if playlist_id:
-            payload['media']['playlist_id'] = playlist_id
+            payload['media']['playlists'] = { "playlist_id":playlist_id }
 
         return self.make_call('media', 'POST', payload=payload)
 
