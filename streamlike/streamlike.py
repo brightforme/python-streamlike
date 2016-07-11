@@ -4,6 +4,7 @@ from .helpers import raise_errors_on_failure
 import requests
 import json
 
+
 class Streamlike:
     """
         The wrapper class for the streamlike api.
@@ -42,13 +43,13 @@ class Streamlike:
         req = requests.post("https://api.streamlike.com/streamlikeAuthToken",
                             data=payload,
                             headers=headers
-                           )
+                            )
         auth_token = ElementTree.fromstring(req.text).find('token').text
         headers['X-Streamlike-Authorization'] = 'streamlikeAuth token="{0}"'.format(auth_token)
         headers['Content-Type'] = 'application/xml'
         req = requests.post("https://api.streamlike.com/streamlikeAuthSessionToken",
                             headers=headers
-                           )
+                            )
         return ElementTree.fromstring(req.text).find('token').text
 
     def make_call(self, endpoint, method, payload=None, params=None):
@@ -61,7 +62,7 @@ class Streamlike:
             params   -- the request params (optional)
         """
         headers = {
-            'Accept':'application/json',
+            'Accept': 'application/json',
             'Content-Type': 'application/json',
             'X-Streamlike-Authorization': 'streamlikeAuth token="{0}"'.format(self.token)
         }
@@ -71,26 +72,28 @@ class Streamlike:
             req = requests.delete(self.api_url + endpoint,
                                   headers=headers,
                                   data=json.dumps(payload)
-                                 )
+                                  )
         if method == 'POST':
             req = requests.post(self.api_url + endpoint,
                                 headers=headers,
                                 data=json.dumps(payload)
-                               )
+                                )
         if method == 'PUT':
             req = requests.put(self.api_url + endpoint,
                                headers=headers,
                                data=json.dumps(payload)
-                              )
+                               )
+
         raise_errors_on_failure(req)
         if req.headers['content-type'] == 'application/json':
             return req.json()
         return req.text
 
-    #TODO: API coverage 45 args vs 11 args
+    # TODO: API coverage 45 args vs 11 args
     def add_media(self, media_url, permalink, media_type, name,
                   status, description=None, credits=None, keywords=None, codec='h264',
-                  hide_controls=True, callback_url=None, html5_encoding=False, playlist_id=None):
+                  hide_controls=True, callback_url=None, html5_encoding=False, playlist_id=None,
+                  tag_id=None):
         """
             adds a media to streamlike.
 
@@ -130,13 +133,16 @@ class Streamlike:
         if html5_encoding:
             payload['media']['external_encodings'] = {
                 "external_encoding": {
-                    "label":"streamlike_html5",
-                    "value":"true"
+                    "label": "streamlike_html5",
+                    "value": "true"
                 }
             }
 
         if playlist_id:
-            payload['media']['playlists'] = { "playlist_id":playlist_id }
+            payload['media']['playlists'] = {"playlist_id": playlist_id}
+
+        if tag_id:
+            payload["media"]["tag_ids"] = {"tag_id": tag_id}
 
         return self.make_call('media', 'POST', payload=payload)
 
@@ -215,6 +221,6 @@ class Streamlike:
 
     def add_to_playlist(self, media_id, playlist_id):
         updated_field = {
-            "playlist_id":playlist_id
+            "playlist_id": playlist_id
         }
         return self.update_media(media_id, updated_field)
